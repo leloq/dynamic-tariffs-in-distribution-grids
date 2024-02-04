@@ -1,0 +1,37 @@
+\ Model test_copy
+\ LP format - for model browsing. Use MPS format to capture full model detail.
+Minimize
+ 
+Subject To
+ daily_charge: p_ch_opt[2952] + p_ch_opt[2953] + p_ch_opt[2954]
+   + p_ch_opt[2955] + p_ch_opt[2956] + p_ch_opt[2957] + p_ch_opt[2958]
+   + p_ch_opt[2959] + p_ch_opt[2960] + p_ch_opt[2972] + p_ch_opt[2973]
+   + p_ch_opt[2974] + p_ch_opt[2975] = 86.02292870754667
+ R3317: p_ch_opt[2952] <= 5.259606637912328
+ R3318: p_ch_opt[2953] <= 5.259606637912328
+ R3319: p_ch_opt[2954] <= 5.259606637912328
+ R3320: p_ch_opt[2955] <= 5.259606637912328
+ R3321: p_ch_opt[2956] <= 5.259606637912328
+ R3322: p_ch_opt[2957] <= 5.259606637912328
+ R3323: p_ch_opt[2958] <= 5.259606637912328
+ R3324: p_ch_opt[2959] <= 5.259606637912328
+ R3325: p_ch_opt[2960] <= 5.259606637912328
+ R3337: p_ch_opt[2972] <= 5.259606637912328
+ R3338: p_ch_opt[2973] <= 5.259606637912328
+ R3339: p_ch_opt[2974] <= 5.259606637912328
+ R3340: p_ch_opt[2975] <= 5.259606637912328
+Bounds
+ p_ch_opt[2952] free
+ p_ch_opt[2953] free
+ p_ch_opt[2954] free
+ p_ch_opt[2955] free
+ p_ch_opt[2956] free
+ p_ch_opt[2957] free
+ p_ch_opt[2958] free
+ p_ch_opt[2959] free
+ p_ch_opt[2960] free
+ p_ch_opt[2972] free
+ p_ch_opt[2973] free
+ p_ch_opt[2974] free
+ p_ch_opt[2975] free
+End
