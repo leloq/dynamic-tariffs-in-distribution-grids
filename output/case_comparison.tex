@@ -1,0 +1,24 @@
+\begin{tabular}{lllllrrrr}
+\toprule
+{} &      FIT & Grid charges &    Tariff & Flexibility &  Worst HP day &  Worst PV day &  Worst EV day &  Worst yearly day \\
+name                         &          &              &           &             &               &               &               &                   \\
+\midrule
+Constant without flexibility &      fit &   volumetric &  constant &    constant &        1154.4 &        2328.8 &         855.7 &            2488.2 \\
+Constant Volumetric\_FIT      &      fit &   volumetric &  constant &     dynamic &        1121.2 &        1874.6 &         791.8 &            2263.2 \\
+Dynamic Volumetric\_FIT       &      fit &   volumetric &   dynamic &     dynamic &        2098.9 &        1862.0 &        1536.7 &            2616.1 \\
+Constant Volumetric\_DynFeed  &  dynamic &   volumetric &  constant &     dynamic &        1120.0 &        2168.2 &         768.2 &            2487.1 \\
+Dynamic Volumetric\_DynFeed   &  dynamic &   volumetric &   dynamic &     dynamic &        2124.3 &        2136.5 &        1533.5 &            2611.0 \\
+Constant Peak\_FIT            &      fit &         peak &  constant &     dynamic &         988.4 &        1897.6 &         709.7 &            2248.2 \\
+Dynamic Peak\_FIT             &      fit &         peak &   dynamic &     dynamic &        1638.6 &        1969.6 &        1294.2 &            2568.3 \\
+Constant Peak\_DynFeed        &  dynamic &         peak &  constant &     dynamic &        1171.9 &        2594.6 &         709.6 &            2649.9 \\
+Dynamic Peak\_DynFeed         &  dynamic &         peak &   dynamic &     dynamic &        1639.2 &        2467.0 &        1294.3 &            2647.6 \\
+Constant Rotating\_FIT        &  dynamic &     rotating &  constant &     dynamic &        1166.7 &        2161.9 &         744.1 &            2489.8 \\
+Dynamic Rotating\_FIT         &  dynamic &     rotating &   dynamic &     dynamic &        1439.6 &        2130.5 &        1028.2 &            2480.9 \\
+Constant Rotating\_DynFeed    &      fit &     rotating &  constant &     dynamic &        1173.1 &        1899.7 &         781.1 &            2226.3 \\
+Dynamic Rotating\_DynFeed     &      fit &     rotating &   dynamic &     dynamic &        1431.0 &        1890.6 &        1022.7 &            2277.3 \\
+Constant Segmented\_FIT       &  dynamic &    segmented &  constant &     dynamic &         976.1 &        2152.9 &         697.8 &            2486.9 \\
+Dynamic Segmented\_FIT        &  dynamic &    segmented &   dynamic &     dynamic &        1221.2 &        2145.5 &         961.9 &            2485.3 \\
+Constant Segmented\_DynFeed   &      fit &    segmented &  constant &     dynamic &         981.6 &        1868.4 &         672.3 &            2252.9 \\
+Dynamic Segmented\_DynFeed    &      fit &    segmented &   dynamic &     dynamic &        1214.7 &        1888.9 &         969.7 &            2330.4 \\
+\bottomrule
+\end{tabular}
