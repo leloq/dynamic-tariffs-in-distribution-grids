@@ -9,13 +9,14 @@ import edisgo
 from edisgo.edisgo import import_edisgo_from_files
 from edisgo.network.results import Results
 from edisgo.flex_opt import check_tech_constraints
+from edisgo.flex_opt.reinforce_grid import enhanced_reinforce_grid
 
 
 debug = True
 grid_dir = r"input/grids"
 res_dir = r"output"
 file_name_constant = \
-    "00_pricing_constant_operation_dynamic_fi_fit_ne_volumetric_gridch_False_HPnew.pkl"
+    "00_pricing_constant_operation_constant_fi_fit_ne_volumetric_gridch_False_HPnew.pkl"
 files_name_dynamic = \
     [file for file in os.listdir(res_dir) if file.endswith("HPnew.pkl") and
      (file != file_name_constant)]
@@ -95,7 +96,47 @@ ts_dict = {
 ts_constant_orig = \
     pd.read_pickle(os.path.join(res_dir, file_name_constant)).divide(1000)
 
-for grid_id in grids:
+
+def adapt_edisgo_timeseries_with_dynamic_tariffs(edisgo_object, res_loads, timeseries_dict, ts_mode,
+                                                 nr_res_loads, share_dynamic, ts_const, ts_dyn):
+    edisgo_object.timeseries.timeindex = timeseries_dict[ts_mode]
+    nr_loads_dyn = int(nr_res_loads * share_dynamic)
+    seeds = random.sample(range(0, nr_res_loads), nr_loads_dyn)
+    loads_dyn = ts_const.iloc[:, seeds].columns
+    loads_constant = \
+        ts_const.columns[~ts_const.columns.isin(loads_dyn)]
+    ts_new = pd.concat([ts_const[loads_constant],
+                        ts_dyn[loads_dyn]], axis=1)
+    ts_new.columns = res_loads.index
+    # split into effective load and effective feed-in
+    ts_effective_load = ts_new[ts_new > 0].fillna(0)
+    ts_effective_feedin = ts_new[ts_new < 0].fillna(0)
+    names_pv = ["PV_" + col for col in ts_effective_feedin.columns]
+    ts_effective_feedin.columns = names_pv
+    generators = edisgo_object.topology.generators_df.copy()
+    new_pv = pd.DataFrame(index=names_pv, columns=generators.columns)
+    new_pv.bus = edisgo_object.topology.loads_df.loc[ts_effective_load.columns, "bus"].values
+    new_pv.p_nom = -ts_effective_feedin.min()
+    new_pv.type = "solar"
+    new_pv.control = "PQ"
+    new_pv.subtype = "residential_pv"
+    new_pv.voltage_level = "lv"
+    # update loads
+    ts_loads_active_power_new = \
+        edisgo_object.timeseries.loads_active_power.copy()
+    ts_loads_active_power_new.update(ts_effective_load)
+    edisgo_object.timeseries.loads_active_power = ts_loads_active_power_new
+    # add new generators
+    edisgo_object.topology.generators_df = pd.concat([edisgo_object.topology.generators_df, new_pv])
+    edisgo_object.timeseries.generators_active_power = pd.concat([
+        edisgo_object.timeseries.generators_active_power, -ts_effective_feedin
+    ], axis=1)
+    # set reactive powers
+    edisgo_object.set_time_series_reactive_power_control()
+    edisgo_obj.check_integrity()
+
+
+for grid_id in sorted(grids)[3:]:
     try:
         int(grid_id)
     except ValueError:
@@ -125,7 +166,10 @@ for grid_id in grids:
 
         # check resulting edisgo object
         edisgo_obj.check_integrity()
-        edisgo_obj.reinforce(reduced_analysis=True, catch_convergence_problems=True)
+        try:
+            edisgo_obj.reinforce(reduced_analysis=True, catch_convergence_problems=True)
+        except:
+            enhanced_reinforce_grid(edisgo_obj, reduced_analysis=True)
         edisgo_obj.results.to_csv(
             f"{res_dir}/grid_reinforcement_results/{grid_id}/base",
             parameters={"grid_expansion_results": ["grid_expansion_costs",
@@ -147,15 +191,15 @@ for grid_id in grids:
     ts_constant.index = edisgo_obj.timeseries.timeindex
     ts_constant.columns = range(nr_residential_loads)
     for file_name_dynamic in files_name_dynamic:
-        edisgo_obj = deepcopy(edisgo_orig)
         ts_dynamic_orig = \
             pd.read_pickle(os.path.join(res_dir, file_name_dynamic)).divide(1000)
         ts_dynamic = ts_dynamic_orig.iloc[:, loads_index]
-        ts_dynamic.index = edisgo_obj.timeseries.timeindex
+        ts_dynamic.index = edisgo_orig.timeseries.timeindex
         ts_dynamic.columns = range(nr_residential_loads)
         # vary share of dynamically controlled loads
         for share_dyn in [0.0, 0.25, 0.5, 0.75, 1.0]:
             for mode in ["feed-in", "load", "debug"]:
+                print(f"Starting analysis for {grid_id}-{mode} for tariff {file_name_dynamic}-{share_dyn}.")
                 try:
                     res_dir_tmp = os.path.join(res_dir, "grid_reinforcement_results", str(grid_id),
                                                file_name_dynamic, str(share_dyn), mode)
@@ -164,25 +208,25 @@ for grid_id in grids:
                             print(f"{grid_id}-{mode} for tariff {file_name_dynamic}-{share_dyn} already solved. Skipping.")
                             continue
                     edisgo_obj = deepcopy(edisgo_orig)
-                    edisgo_obj.timeseries.timeindex = ts_dict[mode]
-                    nr_loads_dyn = int(nr_residential_loads * share_dyn)
-                    seeds = random.sample(range(0, nr_residential_loads), nr_loads_dyn)
-                    loads_dyn = ts_constant.iloc[:, seeds].columns
-                    loads_constant = \
-                        ts_constant.columns[~ts_constant.columns.isin(loads_dyn)]
-                    ts_new = pd.concat([ts_constant[loads_constant],
-                                        ts_dynamic[loads_dyn]], axis=1)
-                    ts_new.columns = residential_loads.index
-                    ts_loads_active_power_new = \
-                        edisgo_obj.timeseries.loads_active_power.copy()
-                    ts_loads_active_power_new.update(ts_new)
-                    edisgo_obj.timeseries.loads_active_power = ts_loads_active_power_new
+                    adapt_edisgo_timeseries_with_dynamic_tariffs(
+                        edisgo_object=edisgo_obj,
+                        res_loads=residential_loads,
+                        timeseries_dict=ts_dict,
+                        ts_mode=mode,
+                        nr_res_loads=nr_residential_loads,
+                        share_dynamic=share_dyn,
+                        ts_const=ts_constant,
+                        ts_dyn=ts_dynamic
+                    )
                     edisgo_obj.analyze()
                     voltage_diff, crit_lines_score = get_grid_issues(edisgo_obj)
                     os.makedirs(f"{res_dir_tmp}/results_before_reinforcement", exist_ok=True)
                     voltage_diff.to_csv(f"{res_dir_tmp}/results_before_reinforcement/voltage_diff.csv")
                     crit_lines_score.to_csv(f"{res_dir_tmp}/results_before_reinforcement/overloading.csv")
-                    edisgo_obj.reinforce(reduced_analysis=True, catch_convergence_problems=True)
+                    try:
+                        edisgo_obj.reinforce(reduced_analysis=True, catch_convergence_problems=True)
+                    except:
+                        enhanced_reinforce_grid(edisgo_obj, reduced_analysis=True)
                     edisgo_obj.analyze()
                     edisgo_obj.results.to_csv(f"{res_dir_tmp}")
                 except Exception:
