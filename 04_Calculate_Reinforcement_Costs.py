@@ -15,11 +15,37 @@ from edisgo.flex_opt.reinforce_grid import enhanced_reinforce_grid
 debug = True
 grid_dir = r"input/grids"
 res_dir = r"output"
-file_name_constant = \
+
+file_name_ref = \
     "00_pricing_constant_operation_constant_fi_fit_ne_volumetric_gridch_False_HPnew.pkl"
-files_name_dynamic = \
-    [file for file in os.listdir(res_dir) if file.endswith("HPnew.pkl") and
-     (file != file_name_constant)]
+files_name_constant = [
+ '00_pricing_constant_operation_dynamic_fi_dynamic_ne_peak_gridch_False_HPnew.pkl',
+ '00_pricing_constant_operation_dynamic_fi_dynamic_ne_rotating_gridch_False_HPnew.pkl',
+ '00_pricing_constant_operation_dynamic_fi_dynamic_ne_segmented_gridch_False_HPnew.pkl',
+ '00_pricing_constant_operation_dynamic_fi_dynamic_ne_volumetric_gridch_False_HPnew.pkl',
+ '00_pricing_constant_operation_dynamic_fi_fit_ne_peak_gridch_False_HPnew.pkl',
+ '00_pricing_constant_operation_dynamic_fi_fit_ne_rotating_gridch_False_HPnew.pkl',
+ '00_pricing_constant_operation_dynamic_fi_fit_ne_segmented_gridch_False_HPnew.pkl',
+ '00_pricing_constant_operation_dynamic_fi_fit_ne_volumetric_gridch_False_HPnew.pkl',]
+files_name_dynamic = [
+ '00_pricing_dynamic_operation_dynamic_fi_dynamic_ne_peak_gridch_False_HPnew.pkl',
+ '00_pricing_dynamic_operation_dynamic_fi_dynamic_ne_rotating_gridch_False_HPnew.pkl',
+ '00_pricing_dynamic_operation_dynamic_fi_dynamic_ne_segmented_gridch_False_HPnew.pkl',
+ '00_pricing_dynamic_operation_dynamic_fi_dynamic_ne_volumetric_gridch_False_HPnew.pkl',
+ '00_pricing_dynamic_operation_dynamic_fi_fit_ne_peak_gridch_False_HPnew.pkl',
+ '00_pricing_dynamic_operation_dynamic_fi_fit_ne_rotating_gridch_False_HPnew.pkl',
+ '00_pricing_dynamic_operation_dynamic_fi_fit_ne_segmented_gridch_False_HPnew.pkl',
+ '00_pricing_dynamic_operation_dynamic_fi_fit_ne_volumetric_gridch_False_HPnew.pkl']
+name_dict ={
+    '00_pricing_dynamic_operation_dynamic_fi_dynamic_ne_peak_gridch_False_HPnew.pkl': "Peak_DynFeed",
+    '00_pricing_dynamic_operation_dynamic_fi_dynamic_ne_rotating_gridch_False_HPnew.pkl': "Rotating_DynFeed",
+    '00_pricing_dynamic_operation_dynamic_fi_dynamic_ne_segmented_gridch_False_HPnew.pkl': "Segmented_DynFeed",
+    '00_pricing_dynamic_operation_dynamic_fi_dynamic_ne_volumetric_gridch_False_HPnew.pkl': "Volumetric_DynFeed",
+    '00_pricing_dynamic_operation_dynamic_fi_fit_ne_peak_gridch_False_HPnew.pkl': "Peak_FIT",
+    '00_pricing_dynamic_operation_dynamic_fi_fit_ne_rotating_gridch_False_HPnew.pkl': "Rotating_FIT",
+    '00_pricing_dynamic_operation_dynamic_fi_fit_ne_segmented_gridch_False_HPnew.pkl': "Segmented_FIT",
+    '00_pricing_dynamic_operation_dynamic_fi_fit_ne_volumetric_gridch_False_HPnew.pkl': "Volumetric_FIT",
+}
 check_existence = True
 
 
@@ -93,16 +119,13 @@ ts_dict = {
     "full": pd.date_range(start="2011-01-01", periods=8760, freq="1h")
 }
 
-ts_constant_orig = \
-    pd.read_pickle(os.path.join(res_dir, file_name_constant)).divide(1000)
 
-
-def adapt_edisgo_timeseries_with_dynamic_tariffs(edisgo_object, res_loads, timeseries_dict, ts_mode,
-                                                 nr_res_loads, share_dynamic, ts_const, ts_dyn):
+def adapt_edisgo_timeseries_with_dynamic_tariffs(
+        edisgo_object, res_loads, timeseries_dict, ts_mode, nr_res_loads, share_dynamic,
+        ts_const, ts_dyn, order_loads):
     edisgo_object.timeseries.timeindex = timeseries_dict[ts_mode]
     nr_loads_dyn = int(nr_res_loads * share_dynamic)
-    seeds = random.sample(range(0, nr_res_loads), nr_loads_dyn)
-    loads_dyn = ts_const.iloc[:, seeds].columns
+    loads_dyn = ts_const.iloc[:, order_loads[:nr_loads_dyn]].columns
     loads_constant = \
         ts_const.columns[~ts_const.columns.isin(loads_dyn)]
     ts_new = pd.concat([ts_const[loads_constant],
@@ -115,7 +138,8 @@ def adapt_edisgo_timeseries_with_dynamic_tariffs(edisgo_object, res_loads, times
     ts_effective_feedin.columns = names_pv
     generators = edisgo_object.topology.generators_df.copy()
     new_pv = pd.DataFrame(index=names_pv, columns=generators.columns)
-    new_pv.bus = edisgo_object.topology.loads_df.loc[ts_effective_load.columns, "bus"].values
+    new_pv.bus = \
+        edisgo_object.topology.loads_df.loc[ts_effective_load.columns, "bus"].values
     new_pv.p_nom = -ts_effective_feedin.min()
     new_pv.type = "solar"
     new_pv.control = "PQ"
@@ -127,7 +151,8 @@ def adapt_edisgo_timeseries_with_dynamic_tariffs(edisgo_object, res_loads, times
     ts_loads_active_power_new.update(ts_effective_load)
     edisgo_object.timeseries.loads_active_power = ts_loads_active_power_new
     # add new generators
-    edisgo_object.topology.generators_df = pd.concat([edisgo_object.topology.generators_df, new_pv])
+    edisgo_object.topology.generators_df = \
+        pd.concat([edisgo_object.topology.generators_df, new_pv])
     edisgo_object.timeseries.generators_active_power = pd.concat([
         edisgo_object.timeseries.generators_active_power, -ts_effective_feedin
     ], axis=1)
@@ -135,16 +160,20 @@ def adapt_edisgo_timeseries_with_dynamic_tariffs(edisgo_object, res_loads, times
     edisgo_object.set_time_series_reactive_power_control()
     edisgo_obj.check_integrity()
 
+ts_ref = pd.read_pickle(os.path.join(res_dir, file_name_ref)).divide(1000)
 
-for grid_id in sorted(grids)[3:]:
+for grid_id in sorted(grids):
     try:
         int(grid_id)
     except ValueError:
         continue
+    print(f"Starting calculation of reinforcement costs for grid {grid_id}.")
     # try:
-    if os.path.isdir(r"output\grid_reinforcement_results\{}\base\topology".format(grid_id)):
+    if os.path.isdir(
+            r"output\grid_reinforcement_results\{}\base\topology".format(grid_id)):
         edisgo_obj = import_edisgo_from_files(
-            r"output\grid_reinforcement_results\{}\base".format(grid_id), import_timeseries=True)
+            r"output\grid_reinforcement_results\{}\base".format(grid_id),
+            import_timeseries=True)
     else:
         # import grid
         grid_dir_tmp = f"{grid_dir}/{grid_id}/grid_data_eGon2021.zip"
@@ -184,13 +213,19 @@ for grid_id in sorted(grids)[3:]:
         edisgo_obj.topology.loads_df.sector == "residential"
     ]
     nr_residential_loads = len(residential_loads)
+    loads_index = np.random.randint(0, len(ts_ref.columns), nr_residential_loads)
+    loads_order = random.sample(range(nr_residential_loads), nr_residential_loads)
 
-    # add new time series
-    loads_index = np.random.randint(0, len(ts_constant_orig.columns), nr_residential_loads)
-    ts_constant = ts_constant_orig.iloc[:, loads_index]
-    ts_constant.index = edisgo_obj.timeseries.timeindex
-    ts_constant.columns = range(nr_residential_loads)
-    for file_name_dynamic in files_name_dynamic:
+
+    for file_name_dynamic, file_name_constant in \
+            zip(files_name_dynamic, files_name_constant):
+        # add new time series
+        ts_constant_orig = \
+            pd.read_pickle(os.path.join(res_dir, file_name_constant)).divide(1000)
+
+        ts_constant = ts_constant_orig.iloc[:, loads_index]
+        ts_constant.index = edisgo_orig.timeseries.timeindex
+        ts_constant.columns = range(nr_residential_loads)
         ts_dynamic_orig = \
             pd.read_pickle(os.path.join(res_dir, file_name_dynamic)).divide(1000)
         ts_dynamic = ts_dynamic_orig.iloc[:, loads_index]
@@ -199,13 +234,17 @@ for grid_id in sorted(grids)[3:]:
         # vary share of dynamically controlled loads
         for share_dyn in [0.0, 0.25, 0.5, 0.75, 1.0]:
             for mode in ["feed-in", "load", "debug"]:
-                print(f"Starting analysis for {grid_id}-{mode} for tariff {file_name_dynamic}-{share_dyn}.")
+                print(f"Starting analysis for {grid_id}-{mode} for tariff "
+                      f"{name_dict[file_name_dynamic]}-{share_dyn}.")
                 try:
-                    res_dir_tmp = os.path.join(res_dir, "grid_reinforcement_results", str(grid_id),
-                                               file_name_dynamic, str(share_dyn), mode)
+                    res_dir_tmp = \
+                        os.path.join(res_dir, "grid_reinforcement_results", str(grid_id),
+                                     name_dict[file_name_dynamic], str(share_dyn), mode)
                     if check_existence:
                         if os.path.isdir(f"{res_dir_tmp}/grid_expansion_results"):
-                            print(f"{grid_id}-{mode} for tariff {file_name_dynamic}-{share_dyn} already solved. Skipping.")
+                            print(f"{grid_id}-{mode} for tariff "
+                                  f"{name_dict[file_name_dynamic]}-{share_dyn} already "
+                                  f"solved. Skipping.")
                             continue
                     edisgo_obj = deepcopy(edisgo_orig)
                     adapt_edisgo_timeseries_with_dynamic_tariffs(
@@ -216,20 +255,27 @@ for grid_id in sorted(grids)[3:]:
                         nr_res_loads=nr_residential_loads,
                         share_dynamic=share_dyn,
                         ts_const=ts_constant,
-                        ts_dyn=ts_dynamic
+                        ts_dyn=ts_dynamic,
+                        order_loads=loads_order
                     )
                     edisgo_obj.analyze()
                     voltage_diff, crit_lines_score = get_grid_issues(edisgo_obj)
-                    os.makedirs(f"{res_dir_tmp}/results_before_reinforcement", exist_ok=True)
-                    voltage_diff.to_csv(f"{res_dir_tmp}/results_before_reinforcement/voltage_diff.csv")
-                    crit_lines_score.to_csv(f"{res_dir_tmp}/results_before_reinforcement/overloading.csv")
+                    os.makedirs(
+                        f"{res_dir_tmp}/results_before_reinforcement", exist_ok=True)
+                    voltage_diff.to_csv(
+                        f"{res_dir_tmp}/results_before_reinforcement/voltage_diff.csv")
+                    crit_lines_score.to_csv(
+                        f"{res_dir_tmp}/results_before_reinforcement/overloading.csv")
                     try:
-                        edisgo_obj.reinforce(reduced_analysis=True, catch_convergence_problems=True)
+                        edisgo_obj.reinforce(reduced_analysis=True,
+                                             catch_convergence_problems=True)
                     except:
                         enhanced_reinforce_grid(edisgo_obj, reduced_analysis=True)
                     edisgo_obj.analyze()
-                    edisgo_obj.results.to_csv(f"{res_dir_tmp}")
+                    edisgo_obj.results.to_csv(
+                        f"{res_dir_tmp}", parameters={'grid_expansion_results': None})
                 except Exception:
-                    print(f"Something went wrong with grid {grid_id}-{mode} for tariff {file_name_dynamic}-{share_dyn}.")
+                    print(f"Something went wrong with grid {grid_id}-{mode} for "
+                          f"tariff {name_dict[file_name_dynamic]}-{share_dyn}.")
                     traceback.print_exc()
 print("Success")
