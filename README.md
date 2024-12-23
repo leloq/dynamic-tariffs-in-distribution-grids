@@ -9,6 +9,41 @@ This repository provides an open-source framework to analyze the impact of dynam
 2. **Grid Reinforcement Analysis**: Assess costs for grid upgrades required due to different tariff schemes.
 3. **Visualization Tools**: Generate insights from simulation results.
 
+## 🧩 Key Steps
+
+1. **Prepare Target Dataset**:
+   - Use `00 Set Up Cases.ipynb` and `00 Preprocessing_EV_data.ipynb` to generate input data.
+
+2. **Simulate Household Profiles**:
+   - Run `01 Create Dynamic and Constant Profiles.ipynb` to simulate profiles under various scenarios.
+
+3. **Calculate Grid Reinforcement Costs**:
+   - Use `04_Calculate_Reinforcement_Costs.py` to compute costs for grid upgrades.
+
+4. **Visualize Results**:
+   - Use `05_Visualise_reinforcement_results.ipynb` to analyze grid reinforcement outcomes.
+
+---
+
+## 📚 Cited Sources
+
+### Heat Pump and Household Load Profiles:
+- Schlemminger, M., Ohrdes, T., Schneider, E., & Knoop, M. (2022). Dataset on electrical single-family house and heat pump load profiles in Germany. *Scientific Data, 9*(1), 56.
+
+### Electric Vehicle Charging Data:
+- Sørensen, Å. L., Lindberg, K. B., Sartori, I., & Andresen, I. (2021). Residential electric vehicle charging datasets from apartment buildings. *Data in Brief, 36*, 107105.
+- Sørensen, Å. L., Lindberg, K. B., Sartori, I., & Andresen, I. (2021). Analysis of residential EV energy flexibility potential based on real-world charging reports and smart meter data. *Energy and Buildings, 241*, 110923.
+
+### PV Generation:
+- Pfenninger, S. & Staffell, I. (2016). Long-term patterns of European PV output using 30 years of validated hourly reanalysis and satellite data. *Energy, 114*, 1251-1265. doi: 10.1016/j.energy.2016.08.060
+- Staffell, I. & Pfenninger, S. (2016). Using Bias-Corrected Reanalysis to Simulate Current and Future Wind Power Output. *Energy, 114*, 1224-1239. doi: 10.1016/j.energy.2016.08.068
+  - *(realized with renewables.ninja)*
+
+### BESS Sizing:
+- Semmelmann, L., Konermann, M., Dietze, D., & Staudt, P. (2024). Empirical field evaluation of self-consumption promoting regulation of household battery energy storage systems. *Energy Policy, 194*, 114343.
+
+---
+
 ---
 
 ## 📂 Repository Structure
@@ -60,40 +95,7 @@ This repository provides an open-source framework to analyze the impact of dynam
 
 ---
 
-## 🧩 Key Steps
 
-1. **Prepare Target Dataset**:
-   - Use `00 Set Up Cases.ipynb` and `00 Preprocessing_EV_data.ipynb` to generate input data.
-
-2. **Simulate Household Profiles**:
-   - Run `01 Create Dynamic and Constant Profiles.ipynb` to simulate profiles under various scenarios.
-
-3. **Calculate Grid Reinforcement Costs**:
-   - Use `04_Calculate_Reinforcement_Costs.py` to compute costs for grid upgrades.
-
-4. **Visualize Results**:
-   - Use `05_Visualise_reinforcement_results.ipynb` to analyze grid reinforcement outcomes.
-
----
-
-## 📚 Cited Sources
-
-### Heat Pump and Household Load Profiles:
-- Schlemminger, M., Ohrdes, T., Schneider, E., & Knoop, M. (2022). Dataset on electrical single-family house and heat pump load profiles in Germany. *Scientific Data, 9*(1), 56.
-
-### Electric Vehicle Charging Data:
-- Sørensen, Å. L., Lindberg, K. B., Sartori, I., & Andresen, I. (2021). Residential electric vehicle charging datasets from apartment buildings. *Data in Brief, 36*, 107105.
-- Sørensen, Å. L., Lindberg, K. B., Sartori, I., & Andresen, I. (2021). Analysis of residential EV energy flexibility potential based on real-world charging reports and smart meter data. *Energy and Buildings, 241*, 110923.
-
-### PV Generation:
-- Pfenninger, S. & Staffell, I. (2016). Long-term patterns of European PV output using 30 years of validated hourly reanalysis and satellite data. *Energy, 114*, 1251-1265. doi: 10.1016/j.energy.2016.08.060
-- Staffell, I. & Pfenninger, S. (2016). Using Bias-Corrected Reanalysis to Simulate Current and Future Wind Power Output. *Energy, 114*, 1224-1239. doi: 10.1016/j.energy.2016.08.068
-  - *(realized with renewables.ninja)*
-
-### BESS Sizing:
-- Semmelmann, L., Konermann, M., Dietze, D., & Staudt, P. (2024). Empirical field evaluation of self-consumption promoting regulation of household battery energy storage systems. *Energy Policy, 194*, 114343.
-
----
 
 ---
 
