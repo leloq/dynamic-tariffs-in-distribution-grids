@@ -12,7 +12,7 @@ This repository provides an open-source framework to analyze the impact of dynam
 ## 🧩 Key Steps
 
 1. **Prepare Target Dataset**:
-   - Use `00 Set Up Cases.ipynb` and `00 Preprocessing_EV_data.ipynb` to generate input data.
+   - Use `00 Preprocessing_EV_data.ipynb` and `00 Set Up Cases.ipynb` to generate input data.
 
 2. **Simulate Household Profiles**:
    - Run `01 Create Dynamic and Constant Profiles.ipynb` to simulate profiles under various scenarios.
@@ -52,12 +52,11 @@ This repository provides an open-source framework to analyze the impact of dynam
 - **`output/`**: Stores results from simulations. So far, only household results are uploaded, since grid reinforcement analysis results are too large files (they should be generated on its own with "04_Calculate_Reinforcement_Costs.py")
 
 ### **Notebooks and Scripts**
-
-1. **`00 Set Up Cases.ipynb`**:
-   - Generates and explains the target dataset used in the simulations.
-
-2. **`00 Preprocessing_EV_data.ipynb`**:
+1. **`00 Preprocessing_EV_data.ipynb`**:
    - Prepares EV charging data for household simulations.
+
+2. **`00 Set Up Cases.ipynb`**:
+   - Generates and explains the target dataset used in the simulations.
 
 3. **`01 Create Dynamic and Constant Profiles.ipynb`**:
    - Simulates household behavior based on dynamic or constant tariffs and regulatory options.
@@ -104,6 +103,7 @@ To install the dependencies, run:
 ```bash
 pip install -r requirements.txt
 ```
+The code has been tested with Python 3.8.8.
 
 ---
 
