@@ -2,7 +2,7 @@
 
 🚀 **Overview**
 
-This repository provides an open-source framework to analyze the impact of dynamic tariffs and regulatory options on the distribution grid. It includes tools to simulate household behavior, create dynamic and constant profiles, calculate grid reinforcement costs, and visualize results.
+This repository provides an open-source framework to analyze the impact of dynamic tariffs and regulatory options on distribution grid reinforcement costs. It includes tools to simulate the operation of household home energy management systems, create load profiles under constant and dynamic tariff adoption, calculate grid reinforcement costs based on PyPSA power flow simulations and the eDisGO package, and visualize results.
 
 📄 **Key Features:**
 1. **Household Simulations**: Create household load profiles, based on different regulatory scenarios (e.g., dynamic tariff adoption, grid charge design, feed-in temuneration)
@@ -20,8 +20,6 @@ This repository provides an open-source framework to analyze the impact of dynam
 3. **Calculate Grid Reinforcement Costs**:
    - Use `04_Calculate_Reinforcement_Costs.py` to compute costs for grid upgrades.
 
-4. **Visualize Results**:
-   - Use `05_Visualise_reinforcement_results.ipynb` to analyze grid reinforcement outcomes.
 
 ---
 
@@ -48,8 +46,9 @@ This repository provides an open-source framework to analyze the impact of dynam
 ## 📂 Repository Structure
 
 ### **Input and Output**
-- **`input/`**: Contains data that is later used 
-- **`output/`**: Stores results from simulations. So far, only household results are uploaded, since grid reinforcement analysis results are too large files (they should be generated on its own with "04_Calculate_Reinforcement_Costs.py")
+- **`input/`**: Contains data that is later used
+- - **`input/preprocessed`**: Contains characteristics and time series of the 500 modelled households
+- **`output/`**: Stores results from simulations. We note that we have removed most of the output files to reduce the size of the repository. We can provide the resulting files upon request.
 
 ### **Notebooks and Scripts**
 1. **`00 Preprocessing_EV_data.ipynb`**:
@@ -78,15 +77,14 @@ This repository provides an open-source framework to analyze the impact of dynam
 
 4. **`02 Analyze Aggregated Household Profiles and Regulatory Cases.ipynb`**:
    - Aggregates results and evaluates regulatory scenarios from a peak load perspective
+  
 
-5. **`03 Build grid profiles.ipynb`**:
-   - Builds grid profiles based on household simulations. 
+5. **`03 Calculate_Reinforcement_Costs.py`**:
+   - Distribute the modelled household loads over ding0 grid topologies, run PyPSA power flow analysis and calculate reinforcement costs with eDisGO
 
-6. **`04_Calculate_Reinforcement_Costs.py`**:
-   - Calculates grid reinforcement costs based on simulated household data with eDisGo and PyPSA.
+6. **`04 Visualize Profiles.ipynb`**:
+   - Visualize resulting load profiles under different regulatory scenarios
 
-7. **`05_Visualise_reinforcement_results.ipynb`**:
-   - Visualizes grid reinforcement results.
 
 ### **Other Files**
 - **`requirements.txt`**: Contains the Python dependencies required to run the project.
@@ -95,7 +93,7 @@ This repository provides an open-source framework to analyze the impact of dynam
 
 
 
----
+
 
 ## 💻 Requirements
 
@@ -104,6 +102,14 @@ To install the dependencies, run:
 pip install -r requirements.txt
 ```
 The code has been tested with Python 3.8.8.
+
+---
+
+## Changelog
+
+25.04.2025: Clean version: Cleaning up file structure, improving structure of household calculations, adding documentation, fixing minor bug in BESS efficiency calculations due to double consideration (note: we checked the influence of the bug on the peak load calculations, which were minimal and did not change the direction of the results), deleting unnecessary files, removed files from output folder to reduce size of repository
+
+07.10.2024: Official release for calculations in the underlying paper
 
 ---
 
