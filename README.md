@@ -1,4 +1,4 @@
-# Analyzing the Impact of Dynamic Tariff Adoption and Regulatory Options on Distribution Grids with an Open-Source Framework
+# Analyzing the Impact of Dynamic Tariff Adoption and Regulatory Options on Distribution Grids
 
 ![Python](https://img.shields.io/badge/python-3.12-blue.svg)
 
