@@ -93,7 +93,7 @@ This repository provides an open-source framework to analyze the impact of dynam
   
 
 5. **`03 Calculate_Reinforcement_Costs.py`**:
-   - Distribute the modelled household loads over ding0 grid topologies, run PyPSA power flow analysis and calculate reinforcement costs with eDisGO. Requires to download [ underlying ding0 distribution grid topology data]([https://dl.acm.org/doi/10.1145/3679240.3734590](https://zenodo.org/records/10405129)).
+   - Distribute the modelled household loads over ding0 grid topologies, run PyPSA power flow analysis and calculate reinforcement costs with eDisGO. Requires downloading [underlying ding0 distribution grid topology data](https://zenodo.org/records/10405129).
 
 6. **`04 Visualize Profiles.ipynb`**:
    - Visualize resulting load profiles under different regulatory scenarios
