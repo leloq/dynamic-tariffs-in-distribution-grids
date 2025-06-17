@@ -1,8 +1,7 @@
-# Dynamic Tariffs in Distribution Grids
+# Analyzing the Impact of Dynamic Tariff Adoption and Regulatory Options on Distribution Grids with an Open-Source Framework
 
 ![Python](https://img.shields.io/badge/python-3.12-blue.svg)
 
-**Analyzing the Impact of Dynamic Tariff Adoption and Regulatory Options on Distribution Grids with an Open-Source Framework**
 *by Leo Semmelmann, Katharina Kaiser, Anya Heider, Kevin J. Kircher, Gabriela Hug, Christof Weinhardt*
 Presented at the 16th ACM International Conference on Future and Sustainable Energy Systems (ACM e-Energy 2025), Rotterdam
 
