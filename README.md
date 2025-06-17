@@ -1,5 +1,19 @@
 # Dynamic Tariffs in Distribution Grids
 
+![Python](https://img.shields.io/badge/python-3.12-blue.svg)
+
+**Analyzing the Impact of Dynamic Tariff Adoption and Regulatory Options on Distribution Grids with an Open-Source Framework**
+*by Leo Semmelmann, Katharina Kaiser, Anya Heider, Kevin J. Kircher, Gabriela Hug, Christof Weinhardt*
+Presented at the 16th ACM International Conference on Future and Sustainable Energy Systems (ACM e-Energy 2025), Rotterdam
+
+---
+
+This repository contains the code and data accompanying the paper:
+> **Analyzing the Impact of Dynamic Tariff Adoption and Regulatory Options on Distribution Grids with an Open-Source Framework**
+> Accepted at *ACM e-Energy 2025*
+> [Link to paper](https://dl.acm.org/doi/10.1145/3679240.3734590)
+
+
 🚀 **Overview**
 
 This repository provides an open-source framework to analyze the impact of dynamic tariffs and regulatory options on distribution grid reinforcement costs. It includes tools to simulate the operation of household home energy management systems, create load profiles under constant and dynamic tariff adoption, calculate grid reinforcement costs based on PyPSA power flow simulations and the eDisGO package, and visualize results.
